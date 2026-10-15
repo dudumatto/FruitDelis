@@ -7,6 +7,7 @@
 - 40–60 produtos.
 - 200 logins/usuários.
 - Sem domínio próprio.
+- Site da empresa: https://frutidelis.com.br/
 - Admin com acesso para inserir produtos novos e clientes novos.
 
 ### Fluxo desejado
