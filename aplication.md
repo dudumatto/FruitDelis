@@ -73,8 +73,10 @@ Ao fechar o carrinho, a Edge Function lê e grava no banco, salva o PDF no Stora
 
 #### Perfis de acesso
 
-- **Admin:** cadastra produtos, regiões, lojas e clientes; altera preços e taxas; cadastra os e-mails dos clientes das lojas.
+- **Admin (empresa):** cadastra produtos, regiões, lojas e clientes; altera preços e taxas; cadastra os e-mails dos clientes das lojas. Tudo pelo sistema.
+- **Gerente / vendedor (loja):** perfis de loja, com isolamento por loja via RLS.
 - **Cliente:** vê só o catálogo, os preços da sua região e os próprios pedidos e compras.
+- **Cadastro fechado:** signup público desativado no Supabase; só e-mails pré-cadastrados entram. Cada cliente fica vinculado à sua loja e região.
 
 #### Motor de preço e ICMS
 
@@ -85,22 +87,22 @@ Ao fechar o carrinho, a Edge Function lê e grava no banco, salva o PDF no Stora
 #### PDF e e-mail
 
 - Ao fechar o carrinho, uma Edge Function recalcula tudo, grava o pedido e a ordem de serviço e gera o PDF com o design da empresa.
-- O PDF fica em bucket privado; o e-mail leva o PDF anexado ou um link com validade.
+- O PDF fica em bucket privado; o cliente recebe um link com expiração, e o e-mail leva o PDF anexado ou esse link.
 - O status do envio fica gravado, com nova tentativa automática e botão de reenviar.
 
 #### Segurança
 
-- Row Level Security (RLS) em todas as tabelas, com isolamento por loja e por perfil.
+- Row Level Security (RLS) em todas as tabelas, com perfis (admin, gerente, vendedor) e isolamento por loja.
 - Cadastro público desativado no Supabase. Só entram e-mails pré-cadastrados.
 - Autenticação por JWT do Supabase, validada nas regras do banco e nas funções.
-- Chave `service_role` só nas Edge Functions, nunca no front-end. Chaves do serviço de e-mail também só no servidor.
+- Chave `service_role` só nas Edge Functions, nunca no front-end. Chaves de WhatsApp e do serviço de e-mail também só no servidor.
 - Storage privado, com links assinados e expiração.
 - Validação de entrada no servidor e limite de requisições.
 - Log de auditoria: quem criou ou alterou pedido, produto e preço.
-- Autenticação em dois fatores (MFA) obrigatória para o admin.
+- Autenticação em dois fatores (MFA) obrigatória para admins.
 - Revisão de segurança antes de publicar, testando acesso a dados de outra loja.
 - Backup diário no plano Pro. Recuperação em ponto específico (PITR) é add-on pago, a avaliar conforme o volume de pedidos.
-- LGPD: não obriga hospedar no Brasil, mas exige contrato com o fornecedor e atenção à transferência internacional.
+- Conformidade com a LGPD: não obriga hospedar no Brasil, mas exige contrato com o fornecedor e atenção à transferência internacional.
 
 ### Funcionalidades e design
 
