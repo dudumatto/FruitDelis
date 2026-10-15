@@ -37,7 +37,7 @@ Cada produto tem foto, descrição, preço etc.
 
 **Outros**
 
-- E-mail para cada unidade/loja.
+- Login de Usuario para cada unidade de loja
 
 ---
 
@@ -66,7 +66,7 @@ Combinação escolhida: **Supabase Pro** (banco e backend) + **Cloudflare Pages*
 
 ### Arquitetura e segurança
 
-Toda regra que afeta dinheiro ou acesso roda no servidor; o navegador só exibe e envia as escolhas do usuário.
+Toda regra que afeta dinheiro ou acesso roda no servidor; o navegador só exibe e envia as escolhas do usuário. (regras e valores no backend)
 
 > *[Conteúdo embutido: fluxo do pedido · 5 componentes]*
 
@@ -74,10 +74,11 @@ Ao fechar o carrinho, a Edge Function lê e grava no banco, salva o PDF no Stora
 
 #### Perfis de acesso
 
-- **Admin (empresa):** cadastra produtos, regiões, lojas e clientes; altera preços e taxas; cadastra os e-mails dos clientes das lojas. Tudo pelo sistema.
-- **Gerente / vendedor (loja):** perfis de loja, com isolamento por loja via RLS.
-- **Cliente:** vê só o catálogo, os preços da sua região e os próprios pedidos e compras.
-- **Cadastro fechado:** signup público desativado no Supabase; só e-mails pré-cadastrados entram. Cada cliente fica vinculado à sua loja e região.
+Existem apenas **dois perfis**: administrador e usuário (empresa/cliente).
+
+- **Administrador (empresa):** acesso total ao painel. Cadastra produtos, regiões, lojas e usuários; altera preços e taxas; cadastra os e-mails dos usuários das lojas; vê todos os pedidos e o log de auditoria. Tudo pelo sistema. MFA obrigatório.
+- **Usuário (empresa/cliente):** vê só o catálogo, os preços da sua região, monta o carrinho, fecha compras e consulta os próprios pedidos e PDFs. Não altera preços, produtos nem dados de outras lojas; isolamento por loja e região via RLS.
+- **Cadastro fechado:** signup público desativado no Supabase; só e-mails pré-cadastrados pelo administrador entram. Cada usuário fica vinculado à sua loja e região.
 
 #### Motor de preço e ICMS
 
@@ -93,7 +94,7 @@ Ao fechar o carrinho, a Edge Function lê e grava no banco, salva o PDF no Stora
 
 #### Segurança
 
-- Row Level Security (RLS) em todas as tabelas, com perfis (admin, gerente, vendedor) e isolamento por loja.
+- Row Level Security (RLS) em todas as tabelas, com dois perfis (administrador e usuário) e isolamento por loja. O usuário só lê e grava o que é da sua loja; só o administrador escreve em produtos, preços, regiões, lojas e usuários.
 - Cadastro público desativado no Supabase. Só entram e-mails pré-cadastrados.
 - Autenticação por JWT do Supabase, validada nas regras do banco e nas funções.
 - Chave `service_role` só nas Edge Functions, nunca no front-end. Chaves de WhatsApp e do serviço de e-mail também só no servidor.
@@ -109,7 +110,7 @@ Ao fechar o carrinho, a Edge Function lê e grava no banco, salva o PDF no Stora
 
 O MVP tem nove entregas, todas desenhadas para celular primeiro e instaláveis como aplicativo (PWA).
 
-- [ ] Login com cadastro fechado, JWT e perfis (admin, cliente)
+- [ ] Login com cadastro fechado, JWT e perfis (administrador, usuário)
 - [ ] Catálogo de ~60 produtos com foto, descrição e preço da região do cliente
 - [ ] Motor de preço por região e ICMS por produto e localização, calculado no servidor
 - [ ] Carrinho e fechamento da compra, com preços congelados no pedido
